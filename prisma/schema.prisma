@@ -5,3 +5,33 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model OnboardingSection {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  title     String
+  createdAt DateTime @default(now())
+
+  owners     OnboardingSectionOwner[]
+  submission OnboardingSectionSubmission?
+}
+
+model OnboardingSectionOwner {
+  id         String   @id @default(uuid())
+  sectionId  String
+  ownerEmail String
+  createdAt  DateTime @default(now())
+
+  section OnboardingSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([sectionId, ownerEmail])
+  @@index([ownerEmail])
+}
+
+model OnboardingSectionSubmission {
+  sectionId String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+
+  section OnboardingSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}

@@ -8,6 +8,9 @@
       "prisma"
     ]
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -17,7 +20,9 @@
     "db:push": "prisma db push",
     "db:pull": "prisma db pull",
     "db:migrate": "prisma migrate dev",
-    "db:studio": "prisma studio"
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.3.0",
@@ -38,6 +43,7 @@
     "eslint-config-next": "16.1.5",
     "prisma": "^7.3.0",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

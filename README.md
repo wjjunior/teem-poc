@@ -1,5 +1,47 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Prerequisites
+
+- Node.js 20+
+- pnpm
+- PostgreSQL database (Supabase)
+
+## Environment Setup
+
+Copy `.env.example` to `.env` and fill in your Supabase credentials:
+
+```bash
+cp .env.example .env
+```
+
+## Database Setup
+
+This project uses Prisma 7 with PostgreSQL (Supabase).
+
+### Run migrations
+
+```bash
+pnpm db:migrate
+```
+
+### Seed the database
+
+```bash
+pnpm db:seed
+```
+
+### Reset the database (drops all data)
+
+```bash
+pnpm db:reset
+```
+
+### Open Prisma Studio
+
+```bash
+pnpm db:studio
+```
+
 ## Getting Started
 
 First, run the development server:

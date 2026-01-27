@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getMockUserEmail } from "@/lib/mockUser";
 import { assertCanAccessSection, AuthorizationError } from "@/lib/authorization";
+import { validateSectionData } from "@/lib/sectionValidation";
 
 type RouteContext = { params: Promise<{ sectionKey: string }> };
-
-const submissionSchema = z.object({
-  data: z.record(z.string(), z.unknown()),
-});
 
 async function getSectionByKey(sectionKey: string) {
   const section = await prisma.onboardingSection.findUnique({
@@ -70,23 +66,28 @@ export async function PUT(request: Request, { params }: RouteContext) {
   }
 
   const body = await request.json();
-  const parsed = submissionSchema.safeParse(body);
 
-  if (!parsed.success) {
+  if (!body.data || typeof body.data !== "object") {
     return NextResponse.json(
-      { error: "Invalid data format", details: parsed.error.flatten() },
+      { error: "Invalid data format: 'data' object is required" },
       { status: 400 }
     );
+  }
+
+  const validation = validateSectionData(sectionKey, body.data);
+
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
   const submission = await prisma.onboardingSectionSubmission.upsert({
     where: { sectionId: section.id },
     create: {
       sectionId: section.id,
-      data: parsed.data.data as Prisma.InputJsonValue,
+      data: validation.data as Prisma.InputJsonValue,
     },
     update: {
-      data: parsed.data.data as Prisma.InputJsonValue,
+      data: validation.data as Prisma.InputJsonValue,
     },
   });
 

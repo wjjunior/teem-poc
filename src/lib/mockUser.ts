@@ -1,13 +1,9 @@
-export interface MockUser {
-  id: string;
-  name: string;
-  email: string;
-}
+import { cookies } from "next/headers";
 
-export function getMockUser(): MockUser | null {
-  return null;
-}
+export const MOCK_USER_COOKIE = "mock_user_email";
 
-export function setMockUser(user: MockUser | null): void {
-  // Implementation placeholder
+export async function getMockUserEmail(): Promise<string | null> {
+  const cookieStore = await cookies();
+  const cookie = cookieStore.get(MOCK_USER_COOKIE);
+  return cookie?.value ?? null;
 }

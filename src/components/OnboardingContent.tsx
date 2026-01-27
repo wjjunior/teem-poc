@@ -37,6 +37,26 @@ export default function OnboardingContent({ userEmail }: OnboardingContentProps)
     router.push("/login");
   }
 
+  function renderContent() {
+    if (isLoading) {
+      return (
+        <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
+          <p className="text-gray-500">Loading sections...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
+          <p className="text-red-600">{error}</p>
+        </div>
+      );
+    }
+
+    return <OnboardingAccordion sections={sections} onRefresh={fetchSections} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="mx-auto max-w-4xl px-4">
@@ -53,17 +73,7 @@ export default function OnboardingContent({ userEmail }: OnboardingContentProps)
           </button>
         </div>
 
-        {isLoading ? (
-          <div className="rounded-lg border border-gray-200 bg-white p-8 text-center">
-            <p className="text-gray-500">Loading sections...</p>
-          </div>
-        ) : error ? (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-8 text-center">
-            <p className="text-red-600">{error}</p>
-          </div>
-        ) : (
-          <OnboardingAccordion sections={sections} onRefresh={fetchSections} />
-        )}
+        {renderContent()}
       </div>
     </div>
   );

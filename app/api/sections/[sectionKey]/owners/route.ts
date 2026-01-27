@@ -5,6 +5,12 @@ import { assertCanManageOwners, AuthorizationError } from "@/lib/authorization";
 
 type RouteContext = { params: Promise<{ sectionKey: string }> };
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isValidEmail(email: string): boolean {
+  return EMAIL_REGEX.test(email);
+}
+
 async function getSectionByKey(sectionKey: string) {
   const section = await prisma.onboardingSection.findUnique({
     where: { key: sectionKey },
@@ -59,6 +65,10 @@ export async function POST(request: Request, { params }: RouteContext) {
 
   if (!ownerEmail || typeof ownerEmail !== "string") {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
+  }
+
+  if (!isValidEmail(ownerEmail)) {
+    return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
   }
 
   try {

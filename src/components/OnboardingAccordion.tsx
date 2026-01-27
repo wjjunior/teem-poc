@@ -71,17 +71,25 @@ export default function OnboardingAccordion({
             </summary>
 
             <div className="border-t border-gray-200 p-4">
-              <OwnerEditor
-                sectionKey={section.key}
-                owners={section.owners}
-                canManage={section.isOwner}
-                onOwnersChange={onRefresh}
-              />
+              {section.isOwner ? (
+                <>
+                  <OwnerEditor
+                    sectionKey={section.key}
+                    owners={section.owners}
+                    canManage={true}
+                    onOwnersChange={onRefresh}
+                  />
 
-              {section.isOwner && fields && (
-                <div className="mt-4 border-t border-gray-100 pt-4">
-                  <SectionForm sectionKey={section.key} fields={[...fields]} />
-                </div>
+                  {fields && (
+                    <div className="mt-4 border-t border-gray-100 pt-4">
+                      <SectionForm sectionKey={section.key} fields={[...fields]} />
+                    </div>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  You don&apos;t have access to this section. Contact an owner to request access.
+                </p>
               )}
             </div>
           </details>

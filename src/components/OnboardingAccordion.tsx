@@ -12,8 +12,6 @@ import {
 } from "./ui";
 import type { Section, SectionKey } from "@/types";
 
-export type { Section } from "@/types";
-
 interface OnboardingAccordionProps {
   sections: Section[];
   onSectionSave?: (sectionKey: string) => void;

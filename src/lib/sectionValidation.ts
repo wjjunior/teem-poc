@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { isValidEmail } from "./validation";
+import type { SectionKey } from "@/types";
 
 const optionalEmail = (message: string) =>
   z
@@ -40,7 +41,7 @@ const securitySchema = z.object({
   securityContactEmail: optionalEmail("Invalid security contact email"),
 });
 
-export const sectionSchemas: Record<string, z.ZodSchema> = {
+export const sectionSchemas: Record<SectionKey, z.ZodSchema> = {
   company: companySchema,
   billing: billingSchema,
   team: teamSchema,
@@ -51,11 +52,10 @@ export function validateSectionData(
   sectionKey: string,
   data: unknown
 ): { success: true; data: Record<string, unknown> } | { success: false; error: string } {
-  const schema = sectionSchemas[sectionKey];
+  const schema = sectionSchemas[sectionKey as SectionKey];
 
   if (!schema) {
-    // No specific validation, accept any object
-    return { success: true, data: data as Record<string, unknown> };
+    return { success: false, error: `Unknown section: ${sectionKey}` };
   }
 
   const result = schema.safeParse(data);

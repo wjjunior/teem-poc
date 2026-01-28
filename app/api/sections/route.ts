@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { getMockUserEmail } from "@/lib/mockUser";
+import { withAuth } from "@/lib/apiHandler";
 
-export async function GET() {
-  const email = await getMockUserEmail();
-
-  if (!email) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
+export const GET = withAuth(async (_, { email }) => {
   const sections = await prisma.onboardingSection.findMany({
     orderBy: { createdAt: "asc" },
     include: { owners: true },
@@ -24,4 +18,4 @@ export async function GET() {
   }));
 
   return NextResponse.json(response);
-}
+});

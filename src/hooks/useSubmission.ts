@@ -1,22 +1,13 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryClient";
 import { endpoints, api } from "@/lib/api";
+import { fetchSubmissionOrThrow } from "@/lib/submissionApi";
 import type { FormData } from "@/types";
 
-interface SubmissionResponse {
-  data: FormData | null;
-}
-
-async function fetchSubmission(sectionKey: string): Promise<FormData | null> {
-  const response = await api.get(endpoints.submission(sectionKey));
-  if (!response.ok) {
-    throw new Error("Failed to fetch submission");
-  }
-  const result: SubmissionResponse = await response.json();
-  return result.data;
-}
-
-async function updateSubmission(sectionKey: string, data: FormData): Promise<FormData> {
+async function updateSubmission(
+  sectionKey: string,
+  data: FormData
+): Promise<FormData> {
   const response = await api.put(endpoints.submission(sectionKey), { data });
   const result = await response.json();
 
@@ -30,7 +21,7 @@ async function updateSubmission(sectionKey: string, data: FormData): Promise<For
 export function useSubmission(sectionKey: string) {
   return useQuery({
     queryKey: queryKeys.submission(sectionKey),
-    queryFn: () => fetchSubmission(sectionKey),
+    queryFn: () => fetchSubmissionOrThrow(sectionKey),
   });
 }
 

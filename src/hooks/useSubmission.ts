@@ -1,13 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryClient";
-
-type SubmissionData = Record<string, string | number | boolean>;
+import type { FormData } from "@/types";
 
 interface SubmissionResponse {
-  data: SubmissionData | null;
+  data: FormData | null;
 }
 
-async function fetchSubmission(sectionKey: string): Promise<SubmissionData | null> {
+async function fetchSubmission(sectionKey: string): Promise<FormData | null> {
   const response = await fetch(`/api/sections/${sectionKey}/submission`);
   if (!response.ok) {
     throw new Error("Failed to fetch submission");
@@ -16,10 +15,7 @@ async function fetchSubmission(sectionKey: string): Promise<SubmissionData | nul
   return result.data;
 }
 
-async function updateSubmission(
-  sectionKey: string,
-  data: SubmissionData
-): Promise<SubmissionData> {
+async function updateSubmission(sectionKey: string, data: FormData): Promise<FormData> {
   const response = await fetch(`/api/sections/${sectionKey}/submission`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -46,9 +42,8 @@ export function useUpdateSubmission(sectionKey: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: SubmissionData) => updateSubmission(sectionKey, data),
+    mutationFn: (data: FormData) => updateSubmission(sectionKey, data),
     onSuccess: (data) => {
-      // Update the cache with the new data
       queryClient.setQueryData(queryKeys.submission(sectionKey), data);
     },
   });

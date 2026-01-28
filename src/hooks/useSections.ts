@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryClient";
-import type { Section } from "@/components/OnboardingAccordion";
+import type { Section } from "@/types";
 
 async function fetchSections(): Promise<Section[]> {
   const response = await fetch("/api/sections");

@@ -1,14 +1,12 @@
 import { useQueries } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryClient";
-import type { Section } from "@/components/OnboardingAccordion";
-
-type SubmissionData = Record<string, string | number | boolean>;
+import type { Section, FormData } from "@/types";
 
 interface SubmissionResponse {
-  data: SubmissionData | null;
+  data: FormData | null;
 }
 
-async function fetchSubmission(sectionKey: string): Promise<SubmissionData | null> {
+async function fetchSubmission(sectionKey: string): Promise<FormData | null> {
   const response = await fetch(`/api/sections/${sectionKey}/submission`);
   if (!response.ok) {
     return null;

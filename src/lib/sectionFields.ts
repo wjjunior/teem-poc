@@ -1,15 +1,17 @@
-export const sectionFields = {
+import type { FieldConfig, SectionMeta, SectionKey } from "@/types";
+
+export const sectionFields: Record<SectionKey, FieldConfig[]> = {
   company: [
     {
       name: "companyName",
       label: "Company Name",
-      type: "text" as const,
+      type: "text",
       placeholder: "Acme Inc.",
     },
     {
       name: "website",
       label: "Website",
-      type: "text" as const,
+      type: "text",
       placeholder: "https://example.com",
     },
   ],
@@ -17,13 +19,13 @@ export const sectionFields = {
     {
       name: "billingEmail",
       label: "Billing Email",
-      type: "email" as const,
+      type: "email",
       placeholder: "billing@example.com",
     },
     {
       name: "vatId",
       label: "VAT ID",
-      type: "text" as const,
+      type: "text",
       placeholder: "XX123456789",
     },
   ],
@@ -31,13 +33,13 @@ export const sectionFields = {
     {
       name: "teamSize",
       label: "Team Size",
-      type: "number" as const,
+      type: "number",
       placeholder: "10",
     },
     {
       name: "mainContact",
       label: "Main Contact Email",
-      type: "email" as const,
+      type: "email",
       placeholder: "contact@example.com",
     },
   ],
@@ -45,18 +47,18 @@ export const sectionFields = {
     {
       name: "enable2FA",
       label: "Enable Two-Factor Authentication",
-      type: "checkbox" as const,
+      type: "checkbox",
     },
     {
       name: "securityContactEmail",
       label: "Security Contact Email",
-      type: "email" as const,
+      type: "email",
       placeholder: "security@example.com",
     },
   ],
-} as const;
+};
 
-export const sectionMeta: Record<string, { description: string; deadline: string }> = {
+export const sectionMeta: Record<SectionKey, SectionMeta> = {
   company: {
     description: "In this step, we'll collect basic information to help you get started.",
     deadline: "Section must be completed by the Welcome Call",
@@ -74,5 +76,3 @@ export const sectionMeta: Record<string, { description: string; deadline: string
     deadline: "Section must be completed by the start date",
   },
 };
-
-export type SectionKey = keyof typeof sectionFields;

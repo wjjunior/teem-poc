@@ -2,21 +2,14 @@
 
 import { useState, type SubmitEventHandler } from "react";
 import { useSubmission, useUpdateSubmission } from "@/hooks/useSubmission";
-
-interface FieldConfig {
-  name: string;
-  label: string;
-  type: "text" | "email" | "number" | "checkbox";
-  placeholder?: string;
-}
+import { Alert, Button, FormField } from "./ui";
+import type { FieldConfig, FormData } from "@/types";
 
 interface SectionFormProps {
   sectionKey: string;
   fields: FieldConfig[];
   onSave?: () => void;
 }
-
-type FormData = Record<string, string | number | boolean>;
 
 export default function SectionForm({ sectionKey, fields, onSave }: SectionFormProps) {
   const [localChanges, setLocalChanges] = useState<FormData>({});
@@ -25,7 +18,6 @@ export default function SectionForm({ sectionKey, fields, onSave }: SectionFormP
   const { data: savedData, isLoading } = useSubmission(sectionKey);
   const updateMutation = useUpdateSubmission(sectionKey);
 
-  // Merge saved data with local changes (local changes take priority)
   const formData: FormData = { ...savedData, ...localChanges };
 
   function handleChange(name: string, value: string | number | boolean) {
@@ -53,63 +45,24 @@ export default function SectionForm({ sectionKey, fields, onSave }: SectionFormP
     <form onSubmit={handleSubmit} className="space-y-4">
       {fields.map((field) => (
         <div key={field.name}>
-          {field.type === "checkbox" ? (
-            <label className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={!!formData[field.name]}
-                onChange={(e) => handleChange(field.name, e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300"
-              />
-              <span className="text-sm font-medium text-gray-700">
-                {field.label}
-              </span>
-            </label>
-          ) : (
-            <>
-              <label
-                htmlFor={`${sectionKey}-${field.name}`}
-                className="block text-sm font-medium text-gray-700"
-              >
-                {field.label}
-              </label>
-              <input
-                id={`${sectionKey}-${field.name}`}
-                type={field.type}
-                value={(formData[field.name] as string | number) ?? ""}
-                onChange={(e) =>
-                  handleChange(
-                    field.name,
-                    field.type === "number" ? Number(e.target.value) : e.target.value
-                  )
-                }
-                placeholder={field.placeholder}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-            </>
-          )}
+          <FormField
+            field={field}
+            value={formData[field.name] ?? ""}
+            onChange={handleChange}
+            id={`${sectionKey}-${field.name}`}
+          />
         </div>
       ))}
 
       {updateMutation.error && (
-        <p className="rounded bg-red-50 p-2 text-sm text-red-600">
-          {updateMutation.error.message}
-        </p>
+        <Alert variant="error">{updateMutation.error.message}</Alert>
       )}
 
-      {success && (
-        <p className="rounded bg-green-50 p-2 text-sm text-green-600">
-          {success}
-        </p>
-      )}
+      {success && <Alert variant="success">{success}</Alert>}
 
-      <button
-        type="submit"
-        disabled={updateMutation.isPending}
-        className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
-      >
+      <Button type="submit" disabled={updateMutation.isPending}>
         {updateMutation.isPending ? "Saving..." : "Save"}
-      </button>
+      </Button>
     </form>
   );
 }

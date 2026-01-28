@@ -21,7 +21,9 @@ function GettingStartedCard({ progress }: { progress: number }) {
           <CheckBadgeIcon />
         </div>
         <div className="flex-1">
-          <h1 className="text-xl font-semibold text-gray-900">Getting Started</h1>
+          <h1 className="text-xl font-semibold text-gray-900">
+            Getting Started
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
             Complete the onboarding information below so we can get everything
             up and running for your practice and future Team Member.
@@ -70,7 +72,9 @@ function ErrorState() {
   );
 }
 
-export default function OnboardingContent({ userEmail }: OnboardingContentProps) {
+export default function OnboardingContent({
+  userEmail,
+}: OnboardingContentProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { data: sections = [], isLoading, error } = useSections();
@@ -83,10 +87,13 @@ export default function OnboardingContent({ userEmail }: OnboardingContentProps)
   }, [sections, submissionStatus]);
 
   function handleSectionSave(sectionKey: string) {
-    queryClient.invalidateQueries({ queryKey: queryKeys.submission(sectionKey) });
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.submission(sectionKey),
+    });
   }
 
   function handleSwitchUser() {
+    queryClient.clear();
     router.push("/login");
   }
 

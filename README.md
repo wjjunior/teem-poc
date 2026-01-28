@@ -1,5 +1,7 @@
 # TEEM Onboarding (Fullstack POC)
 
+🔗 **Live Demo:** [https://teem-poc.vercel.app/](https://teem-poc.vercel.app/)
+
 > ## Resources Used
 
 - Next.js 16 (App Router)

@@ -1,5 +1,7 @@
 import { useQueries } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryClient";
+import { endpoints, api } from "@/lib/api";
+import { CACHE_TIME } from "@/lib/constants";
 import type { Section, FormData } from "@/types";
 
 interface SubmissionResponse {
@@ -7,7 +9,7 @@ interface SubmissionResponse {
 }
 
 async function fetchSubmission(sectionKey: string): Promise<FormData | null> {
-  const response = await fetch(`/api/sections/${sectionKey}/submission`);
+  const response = await api.get(endpoints.submission(sectionKey));
   if (!response.ok) {
     return null;
   }
@@ -22,7 +24,7 @@ export function useSubmissionStatus(sections: Section[]) {
     queries: ownedSections.map((section) => ({
       queryKey: queryKeys.submission(section.key),
       queryFn: () => fetchSubmission(section.key),
-      staleTime: 1000 * 60 * 5,
+      staleTime: CACHE_TIME.STALE_TIME, // 5 minutes
     })),
   });
 

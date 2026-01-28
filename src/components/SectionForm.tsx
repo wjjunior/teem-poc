@@ -3,6 +3,7 @@
 import { useState, type SubmitEventHandler } from "react";
 import { useSubmission, useUpdateSubmission } from "@/hooks/useSubmission";
 import { Alert, Button, FormField } from "./ui";
+import { UI_TIMING } from "@/lib/constants";
 import type { FieldConfig, FormData } from "@/types";
 
 interface SectionFormProps {
@@ -31,7 +32,7 @@ export default function SectionForm({ sectionKey, fields, onSave }: SectionFormP
       onSuccess: () => {
         setLocalChanges({});
         setSuccess("Saved successfully!");
-        setTimeout(() => setSuccess(""), 3000);
+        setTimeout(() => setSuccess(""), UI_TIMING.SUCCESS_MESSAGE_DURATION); // 3 seconds
         onSave?.();
       },
     });

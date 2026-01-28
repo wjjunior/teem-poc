@@ -2,6 +2,7 @@
 
 import { useState, type SubmitEvent, type SubmitEventHandler } from "react";
 import { useRouter } from "next/navigation";
+import { endpoints, api } from "@/lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -15,11 +16,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/mock-user", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const response = await api.post(endpoints.mockUser, { email });
 
       const data = await response.json();
 

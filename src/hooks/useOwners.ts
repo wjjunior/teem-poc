@@ -1,12 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryKeys } from "@/lib/queryClient";
+import { endpoints, api } from "@/lib/api";
 
 async function addOwner(sectionKey: string, email: string): Promise<void> {
-  const response = await fetch(`/api/sections/${sectionKey}/owners`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
+  const response = await api.post(endpoints.owners(sectionKey), { email });
 
   if (!response.ok) {
     const data = await response.json();
@@ -15,11 +12,7 @@ async function addOwner(sectionKey: string, email: string): Promise<void> {
 }
 
 async function removeOwner(sectionKey: string, email: string): Promise<void> {
-  const response = await fetch(`/api/sections/${sectionKey}/owners`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
+  const response = await api.delete(endpoints.owners(sectionKey), { email });
 
   if (!response.ok) {
     const data = await response.json();

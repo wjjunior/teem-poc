@@ -6,9 +6,9 @@
 
 - Next.js 16 (App Router)
 - React 19
-- TypeScript (strict mode)
-- Prisma 7 (with `prisma.config.ts` for configuration)
-- PostgreSQL (Supabase with PgBouncer connection pooling)
+- TypeScript
+- Prisma 7
+- PostgreSQL (Supabase)
 - TanStack Query (React Query)
 - Zod (validation)
 - Vitest
@@ -185,6 +185,7 @@ This POC is functional but would need several improvements for production:
 **Current:** Mock cookie-based authentication
 
 **Production Needs:**
+
 - OAuth 2.0 / OpenID Connect (Auth0, Clerk, NextAuth.js)
 - JWT with refresh token rotation
 - RBAC beyond just ownership
@@ -195,6 +196,7 @@ This POC is functional but would need several improvements for production:
 **Current:** PostgreSQL via Supabase with indexes on `ownerEmail` and `userEmail`
 
 **Production Needs:**
+
 - Soft deletes for audit trail
 - Data encryption at rest for PII
 - Read replicas for scaling
@@ -205,6 +207,7 @@ This POC is functional but would need several improvements for production:
 **Current:** Zod validation, consistent error handling
 
 **Production Needs:**
+
 - Rate limiting per user/IP
 - CORS with specific allowed origins
 - Security headers (CSP, HSTS, X-Frame-Options)
@@ -215,6 +218,7 @@ This POC is functional but would need several improvements for production:
 **Current:** Typed errors with consistent responses
 
 **Production Needs:**
+
 - Structured logging (Sentry, DataDog)
 - Error boundaries for React
 - Correlation IDs for request tracing
@@ -224,6 +228,7 @@ This POC is functional but would need several improvements for production:
 **Current:** 42 unit/integration tests
 
 **Production Needs:**
+
 - E2E tests with Playwright/Cypress
 - Integration tests with test containers
 - Visual regression testing
@@ -233,6 +238,7 @@ This POC is functional but would need several improvements for production:
 **Current:** Console logging
 
 **Production Needs:**
+
 - APM (New Relic, DataDog)
 - Health check endpoints
 - Custom metrics and dashboards
@@ -249,13 +255,19 @@ This POC is functional but would need several improvements for production:
 
 > ## Conclusion
 
-This POC demonstrates a functional multi-user onboarding system with clear separation of concerns, type safety, and comprehensive testing. The architecture is designed to be maintainable and extensible.
+I enjoyed building this POC! It was a good exercise in fullstack development with Next.js, and I got to work with some technologies I hadn't used much before (like Prisma 7).
 
-Key technical highlights:
-- Clean API route pattern with `withAuth` wrapper
-- Centralized authorization logic with typed errors
-- React Query for efficient data fetching and caching
-- Zod validation on both frontend and backend
-- Prisma 7 with proper connection pooling configuration
+The requirements were clear, and I tried to implement everything as specified while keeping the code maintainable and testable. The mock authentication system works well for testing different user scenarios, and the ownership model provides flexibility for collaborative onboarding.
 
-The codebase balances functionality with simplicity, meeting all requirements while maintaining production-quality patterns that can be extended as needed.
+One of the main challenges was working within a 24-hour deadline. This constraint forced me to make strategic decisions about what to prioritize - focusing on meeting all requirements while still demonstrating good engineering practices. I had to balance between:
+
+- Building a functional POC that meets all requirements
+- Creating a codebase that demonstrates my knowledge of design patterns, SOLID principles, and best practices
+- Writing testable, maintainable code
+- Not over-engineering for a POC, but also not under-delivering
+
+It was a delicate balance - I wanted to show that I can write production-quality code, but also that I understand when to keep things simple. I believe this POC strikes that balance: it's functional, well-structured, and demonstrates the core concepts while remaining maintainable and extensible.
+
+I kept it simple and focused on functionality rather than over-engineering. In a real-world scenario with more time, I'd probably add more production-ready features (error boundaries, optimistic updates, better loading states, etc.), but for a POC within the given timeframe, I think this demonstrates the core concepts and my approach to software development well.
+
+Feel free to explore the code, run the tests, and let me know if you have any questions!

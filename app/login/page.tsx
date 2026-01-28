@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type SubmitEvent, type SubmitEventHandler } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -9,7 +9,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmitAsync(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -35,6 +35,10 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
+
+  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
+    void handleSubmitAsync(e);
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center">

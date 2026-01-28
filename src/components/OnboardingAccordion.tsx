@@ -13,7 +13,6 @@ export interface Section {
 
 interface OnboardingAccordionProps {
   sections: Section[];
-  onRefresh: () => void;
   onSectionSave?: (sectionKey: string) => void;
 }
 
@@ -65,7 +64,6 @@ function OwnerIcon({ count }: { count: number }) {
 
 export default function OnboardingAccordion({
   sections,
-  onRefresh,
   onSectionSave,
 }: OnboardingAccordionProps) {
   return (
@@ -138,7 +136,6 @@ export default function OnboardingAccordion({
                     sectionKey={section.key}
                     owners={section.owners}
                     canManage={true}
-                    onOwnersChange={onRefresh}
                   />
 
                   {fields && (

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useState, type SubmitEventHandler } from "react";
+import { useSubmission, useUpdateSubmission } from "@/hooks/useSubmission";
 
 interface FieldConfig {
   name: string;
@@ -18,70 +19,31 @@ interface SectionFormProps {
 type FormData = Record<string, string | number | boolean>;
 
 export default function SectionForm({ sectionKey, fields, onSave }: SectionFormProps) {
-  const [formData, setFormData] = useState<FormData>({});
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState("");
+  const [localChanges, setLocalChanges] = useState<FormData>({});
   const [success, setSuccess] = useState("");
 
-  const loadSubmission = useCallback(async () => {
-    setIsLoading(true);
-    setError("");
+  const { data: savedData, isLoading } = useSubmission(sectionKey);
+  const updateMutation = useUpdateSubmission(sectionKey);
 
-    try {
-      const response = await fetch(`/api/sections/${sectionKey}/submission`);
-      if (!response.ok) {
-        throw new Error("Failed to load data");
-      }
-      const { data } = await response.json();
-      if (data) {
-        setFormData(data);
-      }
-    } catch {
-      setError("Failed to load saved data");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [sectionKey]);
-
-  useEffect(() => {
-    loadSubmission();
-  }, [loadSubmission]);
+  // Merge saved data with local changes (local changes take priority)
+  const formData: FormData = { ...savedData, ...localChanges };
 
   function handleChange(name: string, value: string | number | boolean) {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setLocalChanges((prev) => ({ ...prev, [name]: value }));
     setSuccess("");
   }
 
-  async function handleSubmit(e: { preventDefault: () => void }) {
+  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    setIsSaving(true);
-    setError("");
-    setSuccess("");
-
-    try {
-      const response = await fetch(`/api/sections/${sectionKey}/submission`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: formData }),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        setError(result.error || "Failed to save");
-        return;
-      }
-
-      setSuccess("Saved successfully!");
-      setTimeout(() => setSuccess(""), 3000);
-      onSave?.();
-    } catch {
-      setError("Failed to connect to server");
-    } finally {
-      setIsSaving(false);
-    }
-  }
+    updateMutation.mutate(formData, {
+      onSuccess: () => {
+        setLocalChanges({});
+        setSuccess("Saved successfully!");
+        setTimeout(() => setSuccess(""), 3000);
+        onSave?.();
+      },
+    });
+  };
 
   if (isLoading) {
     return <p className="text-sm text-gray-500">Loading...</p>;
@@ -129,8 +91,10 @@ export default function SectionForm({ sectionKey, fields, onSave }: SectionFormP
         </div>
       ))}
 
-      {error && (
-        <p className="rounded bg-red-50 p-2 text-sm text-red-600">{error}</p>
+      {updateMutation.error && (
+        <p className="rounded bg-red-50 p-2 text-sm text-red-600">
+          {updateMutation.error.message}
+        </p>
       )}
 
       {success && (
@@ -141,10 +105,10 @@ export default function SectionForm({ sectionKey, fields, onSave }: SectionFormP
 
       <button
         type="submit"
-        disabled={isSaving}
+        disabled={updateMutation.isPending}
         className="rounded bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
       >
-        {isSaving ? "Saving..." : "Save"}
+        {updateMutation.isPending ? "Saving..." : "Save"}
       </button>
     </form>
   );

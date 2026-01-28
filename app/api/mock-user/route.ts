@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { MOCK_USER_COOKIE } from "@/lib/mockUser";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { isValidEmail } from "@/lib/validation";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -12,7 +11,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
 
-  if (!EMAIL_REGEX.test(email)) {
+  if (!isValidEmail(email)) {
     return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
   }
 

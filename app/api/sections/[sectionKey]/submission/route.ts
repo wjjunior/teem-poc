@@ -2,19 +2,16 @@ import { NextResponse } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getMockUserEmail } from "@/lib/mockUser";
-import { assertCanAccessSection, AuthorizationError } from "@/lib/authorization";
+import {
+  assertCanAccessSection,
+  AuthorizationError,
+} from "@/lib/authorization";
 import { validateSectionData } from "@/lib/sectionValidation";
+import { getSectionByKey } from "@/lib/sections";
 
 type RouteContext = { params: Promise<{ sectionKey: string }> };
 
-async function getSectionByKey(sectionKey: string) {
-  const section = await prisma.onboardingSection.findUnique({
-    where: { key: sectionKey },
-  });
-  return section;
-}
-
-export async function GET(request: Request, { params }: RouteContext) {
+export async function GET(_: Request, { params }: RouteContext) {
   const email = await getMockUserEmail();
   if (!email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -75,7 +72,7 @@ export async function PUT(request: Request, { params }: RouteContext) {
   if (!body.data || typeof body.data !== "object") {
     return NextResponse.json(
       { error: "Invalid data format: 'data' object is required" },
-      { status: 400 }
+      { status: 400 },
     );
   }
 

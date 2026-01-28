@@ -1,76 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type SubmitEventHandler } from "react";
+import { useAddOwner, useRemoveOwner } from "@/hooks/useOwners";
 
 interface OwnerEditorProps {
   sectionKey: string;
   owners: string[];
   canManage: boolean;
-  onOwnersChange: () => void;
 }
 
 export default function OwnerEditor({
   sectionKey,
   owners,
   canManage,
-  onOwnersChange,
 }: OwnerEditorProps) {
   const [newOwnerEmail, setNewOwnerEmail] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
 
-  async function handleAddOwner(e: React.FormEvent) {
+  const addOwnerMutation = useAddOwner(sectionKey);
+  const removeOwnerMutation = useRemoveOwner(sectionKey);
+
+  const isLoading = addOwnerMutation.isPending || removeOwnerMutation.isPending;
+  const error = addOwnerMutation.error || removeOwnerMutation.error;
+
+  const handleAddOwner: SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
     if (!newOwnerEmail.trim()) return;
 
-    setIsLoading(true);
-    setError("");
+    addOwnerMutation.mutate(newOwnerEmail, {
+      onSuccess: () => setNewOwnerEmail(""),
+    });
+  };
 
-    try {
-      const response = await fetch(`/api/sections/${sectionKey}/owners`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: newOwnerEmail }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.error || "Failed to add owner");
-        return;
-      }
-
-      setNewOwnerEmail("");
-      onOwnersChange();
-    } catch {
-      setError("Failed to connect to server");
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  async function handleRemoveOwner(email: string) {
-    setIsLoading(true);
-    setError("");
-
-    try {
-      const response = await fetch(`/api/sections/${sectionKey}/owners`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.error || "Failed to remove owner");
-        return;
-      }
-
-      onOwnersChange();
-    } catch {
-      setError("Failed to connect to server");
-    } finally {
-      setIsLoading(false);
-    }
+  function handleRemoveOwner(email: string) {
+    removeOwnerMutation.mutate(email);
   }
 
   return (
@@ -120,7 +82,7 @@ export default function OwnerEditor({
         </form>
       )}
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-red-600">{error.message}</p>}
     </div>
   );
 }

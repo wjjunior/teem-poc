@@ -2,23 +2,12 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getMockUserEmail } from "@/lib/mockUser";
 import { assertCanManageOwners, AuthorizationError } from "@/lib/authorization";
+import { getSectionByKey } from "@/lib/sections";
+import { isValidEmail } from "@/lib/validation";
 
 type RouteContext = { params: Promise<{ sectionKey: string }> };
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function isValidEmail(email: string): boolean {
-  return EMAIL_REGEX.test(email);
-}
-
-async function getSectionByKey(sectionKey: string) {
-  const section = await prisma.onboardingSection.findUnique({
-    where: { key: sectionKey },
-  });
-  return section;
-}
-
-export async function GET(request: Request, { params }: RouteContext) {
+export async function GET(_: Request, { params }: RouteContext) {
   const email = await getMockUserEmail();
   if (!email) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -68,7 +57,10 @@ export async function POST(request: Request, { params }: RouteContext) {
   }
 
   if (!isValidEmail(ownerEmail)) {
-    return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid email format" },
+      { status: 400 },
+    );
   }
 
   try {
@@ -80,15 +72,10 @@ export async function POST(request: Request, { params }: RouteContext) {
     });
   } catch (e: unknown) {
     // Handle unique constraint violation
-    if (
-      e &&
-      typeof e === "object" &&
-      "code" in e &&
-      e.code === "P2002"
-    ) {
+    if (e && typeof e === "object" && "code" in e && e.code === "P2002") {
       return NextResponse.json(
         { error: "Owner already exists" },
-        { status: 409 }
+        { status: 409 },
       );
     }
     throw e;

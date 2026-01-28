@@ -12,8 +12,8 @@ model OnboardingSection {
   title     String
   createdAt DateTime @default(now())
 
-  owners     OnboardingSectionOwner[]
-  submission OnboardingSectionSubmission?
+  owners      OnboardingSectionOwner[]
+  submissions OnboardingSectionSubmission[]
 }
 
 model OnboardingSectionOwner {
@@ -29,9 +29,14 @@ model OnboardingSectionOwner {
 }
 
 model OnboardingSectionSubmission {
-  sectionId String   @id
+  id        String   @id @default(uuid())
+  sectionId String
+  userEmail String
   data      Json
   updatedAt DateTime @updatedAt
 
   section OnboardingSection @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  @@unique([sectionId, userEmail])
+  @@index([userEmail])
 }

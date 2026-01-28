@@ -12,11 +12,12 @@ interface FieldConfig {
 interface SectionFormProps {
   sectionKey: string;
   fields: FieldConfig[];
+  onSave?: () => void;
 }
 
 type FormData = Record<string, string | number | boolean>;
 
-export default function SectionForm({ sectionKey, fields }: SectionFormProps) {
+export default function SectionForm({ sectionKey, fields, onSave }: SectionFormProps) {
   const [formData, setFormData] = useState<FormData>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -74,6 +75,7 @@ export default function SectionForm({ sectionKey, fields }: SectionFormProps) {
 
       setSuccess("Saved successfully!");
       setTimeout(() => setSuccess(""), 3000);
+      onSave?.();
     } catch {
       setError("Failed to connect to server");
     } finally {

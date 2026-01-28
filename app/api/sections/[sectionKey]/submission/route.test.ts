@@ -113,7 +113,9 @@ describe("GET /api/sections/[sectionKey]/submission", () => {
     mockFindUnique.mockResolvedValue({ id: "1", key: "company", title: "Company", createdAt: new Date() });
     mockAssertCanAccessSection.mockResolvedValue(undefined);
     mockSubmissionFindUnique.mockResolvedValue({
+      id: "sub-1",
       sectionId: "1",
+      userEmail: "user@test.com",
       data: { companyName: "Acme Inc", website: "https://acme.com" },
       updatedAt: new Date(),
     });
@@ -192,7 +194,9 @@ describe("PUT /api/sections/[sectionKey]/submission", () => {
       data: { companyName: "Acme Inc", website: "https://acme.com" },
     });
     mockSubmissionUpsert.mockResolvedValue({
+      id: "sub-1",
       sectionId: "1",
+      userEmail: "user@test.com",
       data: { companyName: "Acme Inc", website: "https://acme.com" },
       updatedAt: new Date(),
     });
@@ -208,9 +212,15 @@ describe("PUT /api/sections/[sectionKey]/submission", () => {
       data: { companyName: "Acme Inc", website: "https://acme.com" },
     });
     expect(mockSubmissionUpsert).toHaveBeenCalledWith({
-      where: { sectionId: "1" },
+      where: {
+        sectionId_userEmail: {
+          sectionId: "1",
+          userEmail: "user@test.com",
+        },
+      },
       create: {
         sectionId: "1",
+        userEmail: "user@test.com",
         data: { companyName: "Acme Inc", website: "https://acme.com" },
       },
       update: {

@@ -37,7 +37,12 @@ export async function GET(request: Request, { params }: RouteContext) {
   }
 
   const submission = await prisma.onboardingSectionSubmission.findUnique({
-    where: { sectionId: section.id },
+    where: {
+      sectionId_userEmail: {
+        sectionId: section.id,
+        userEmail: email,
+      },
+    },
   });
 
   return NextResponse.json({ data: submission?.data ?? null });
@@ -81,9 +86,15 @@ export async function PUT(request: Request, { params }: RouteContext) {
   }
 
   const submission = await prisma.onboardingSectionSubmission.upsert({
-    where: { sectionId: section.id },
+    where: {
+      sectionId_userEmail: {
+        sectionId: section.id,
+        userEmail: email,
+      },
+    },
     create: {
       sectionId: section.id,
+      userEmail: email,
       data: validation.data as Prisma.InputJsonValue,
     },
     update: {

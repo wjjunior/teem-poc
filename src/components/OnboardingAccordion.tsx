@@ -3,7 +3,13 @@
 import OwnerEditor from "./OwnerEditor";
 import SectionForm from "./SectionForm";
 import { sectionFields, sectionMeta } from "@/lib/sectionFields";
-import { Badge, ClockIcon, ChevronRightIcon, UserIcon, sectionIcons } from "./ui";
+import {
+  Badge,
+  ClockIcon,
+  ChevronRightIcon,
+  UserIcon,
+  sectionIcons,
+} from "./ui";
 import type { Section, SectionKey } from "@/types";
 
 export type { Section } from "@/types";
@@ -14,7 +20,8 @@ interface OnboardingAccordionProps {
 }
 
 function SectionIcon({ sectionKey }: { sectionKey: string }) {
-  const IconComponent = sectionIcons[sectionKey as SectionKey] ?? sectionIcons.company;
+  const IconComponent =
+    sectionIcons[sectionKey as SectionKey] ?? sectionIcons.company;
 
   return (
     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600">
@@ -23,14 +30,34 @@ function SectionIcon({ sectionKey }: { sectionKey: string }) {
   );
 }
 
-function OwnerBadge({ count }: { count: number }) {
+function OwnerBadge({
+  count,
+  owners,
+}: {
+  count: number;
+  owners: string[];
+}) {
   return (
-    <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-400">
+    <div className="group/badge relative flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-400">
       <UserIcon />
       {count > 0 && (
         <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-blue-600 text-[10px] font-medium text-white">
           {count}
         </span>
+      )}
+      {owners.length > 0 && (
+        <div className="invisible absolute right-full top-1/2 z-50 mr-2 -translate-y-1/2 rounded-lg bg-gray-900 px-3 py-2 text-xs text-white opacity-0 shadow-lg transition-all duration-200 group-hover/badge:visible group-hover/badge:opacity-100">
+          <p className="mb-1.5 font-medium">Owners:</p>
+          <ul className="space-y-1">
+            {owners.map((email) => (
+              <li key={email} className="flex items-center gap-1.5">
+                <UserIcon className="h-3 w-3" />
+                {email}
+              </li>
+            ))}
+          </ul>
+          <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-gray-900"></div>
+        </div>
       )}
     </div>
   );
@@ -70,7 +97,8 @@ function SectionContent({
   if (!section.isOwner) {
     return (
       <p className="text-sm text-gray-500">
-        You don&apos;t have access to this section. Contact an owner to request access.
+        You don&apos;t have access to this section. Contact an owner to request
+        access.
       </p>
     );
   }
@@ -121,7 +149,7 @@ export default function OnboardingAccordion({
             <SectionIcon sectionKey={section.key} />
             <SectionHeader section={section} />
             <div className="flex items-center gap-3">
-              <OwnerBadge count={section.owners.length} />
+              <OwnerBadge count={section.owners.length} owners={section.owners} />
               <ChevronRightIcon className="h-5 w-5 text-gray-400 transition-transform group-open:rotate-90" />
             </div>
           </summary>
